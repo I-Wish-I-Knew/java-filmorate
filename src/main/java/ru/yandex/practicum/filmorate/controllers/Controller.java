@@ -9,6 +9,7 @@ import javax.validation.Valid;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -20,7 +21,7 @@ public abstract class Controller<T extends AppData> {
     @GetMapping
     public List<T> getAll() {
         log.debug("Количество объектов: {}", data.size());
-        return data.values().stream().toList();
+        return data.values().stream().collect(Collectors.toList());
     }
 
     @PostMapping

@@ -15,8 +15,8 @@
 	<description>Сервис с фильмами и их рейтингами от пользователей</description>
 	<properties>
 		<java.version>17.0.2</java.version>
-		<maven.compiler.source>17.0.2</maven.compiler.source>
-		<maven.compiler.target>17.0.2</maven.compiler.target>
+		<maven.compiler.source>11.0.11</maven.compiler.source>
+		<maven.compiler.target>11.0.11</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
