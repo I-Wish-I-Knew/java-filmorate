@@ -6,13 +6,13 @@ import ru.yandex.practicum.filmorate.exceptions.DataNotExistException;
 import ru.yandex.practicum.filmorate.model.AppData;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RestController
 public abstract class Controller<T extends AppData> {
 
     protected Map<Integer, T> data = new LinkedHashMap<>();
@@ -21,7 +21,7 @@ public abstract class Controller<T extends AppData> {
     @GetMapping
     public List<T> getAll() {
         log.debug("Количество объектов: {}", data.size());
-        return data.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(data.values());
     }
 
     @PostMapping

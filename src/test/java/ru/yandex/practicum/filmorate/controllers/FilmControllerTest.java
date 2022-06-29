@@ -2,19 +2,12 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = FilmController.class)
-class FilmControllerTest {
-
-    @Autowired
-    MockMvc mockMvc;
+class FilmControllerTest extends ControllerTest {
 
     @Test
     @DisplayName("При попытке сохраненить фильм без названия сервер возвращает ошибку")

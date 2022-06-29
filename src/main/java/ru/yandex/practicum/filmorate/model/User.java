@@ -10,11 +10,9 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class User extends AppData {
-    @NotNull(message = "Укажите email")
     @NotBlank(message = "Укажите email")
     @Email(message = "Укажите корректный email")
     private final String email;
-    @NotNull(message = "Укажите логин")
     @NotBlank(message = "Укажите логин")
     @Pattern(regexp = ("\\S+"), message = "Укажите логин без пробелов")
     private final String login;

@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Data
 public class Film extends AppData {
     @NotBlank(message = "Укажите название фильма")
-    @NotNull(message = "Укажите название фильма")
     private final String name;
     @Size(max = 200, message = "Максимальная длина описания — 200 символов")
     private final String description;
