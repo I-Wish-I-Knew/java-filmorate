@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.exceptions.DataAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.WrongDateException;
-import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.models.Film;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

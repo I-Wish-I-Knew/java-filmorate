@@ -3,14 +3,13 @@ package ru.yandex.practicum.filmorate.controllers;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exceptions.DataNotExistException;
-import ru.yandex.practicum.filmorate.model.AppData;
+import ru.yandex.practicum.filmorate.models.AppData;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class Controller<T extends AppData> {
@@ -28,6 +27,7 @@ public abstract class Controller<T extends AppData> {
     public T add(@RequestBody @Valid T t) {
         validate(t);
         t.setId(getId());
+        log.debug("Был добавлен объект: " + t);
         data.put(t.getId(), t);
         return t;
     }
@@ -40,6 +40,7 @@ public abstract class Controller<T extends AppData> {
             throw e;
         }
         validate(t);
+        log.debug("Был обновлён объект: " + t);
         data.put(t.getId(), t);
         return t;
     }
