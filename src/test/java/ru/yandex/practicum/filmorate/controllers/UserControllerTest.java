@@ -3,15 +3,17 @@ package ru.yandex.practicum.filmorate.controllers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = UserController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 class UserControllerTest {
 
     @Autowired
@@ -98,12 +100,7 @@ class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userGson))
-                .andExpect(content().string
-                        ("{\"id\":1,"
-                                + "\"email\":\"email@email.com\","
-                                + "\"login\":\"login\","
-                                + "\"name\":\"login\","
-                                + "\"birthday\":\"1967-03-25\"}"));
+                .andExpect(jsonPath("$.name").value("login"));
     }
 
     @Test
@@ -131,6 +128,6 @@ class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userGson))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isNotFound());
     }
 }
