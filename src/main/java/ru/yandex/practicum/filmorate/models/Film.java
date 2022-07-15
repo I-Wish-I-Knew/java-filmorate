@@ -1,12 +1,17 @@
 package ru.yandex.practicum.filmorate.models;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
-
+@Slf4j
 @Data
 public class Film extends AppData {
     @NotBlank(message = "Укажите название фильма")
@@ -17,4 +22,5 @@ public class Film extends AppData {
     private final LocalDate releaseDate;
     @DecimalMin(value = "0", message = "Продолжительность фильма должна быть положительной")
     private final int duration;
+    private final Set<Integer> likes = new HashSet<>();
 }

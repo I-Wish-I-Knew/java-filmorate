@@ -2,13 +2,20 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class UserControllerTest extends ControllerTest {
+@WebMvcTest(controllers = UserController.class)
+class UserControllerTest {
+
+    @Autowired
+    MockMvc mockMvc;
 
     @Test
     @DisplayName("При попытке сохранить пользователя с пустым email сервер возвращает ошибку")
