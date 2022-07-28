@@ -8,7 +8,6 @@ import java.util.Map;
 
 @Component
 public class InMemoryUserStorage implements DataStorage<User> {
-
     private final Map<Integer, User> users;
     private int id = 0;
 

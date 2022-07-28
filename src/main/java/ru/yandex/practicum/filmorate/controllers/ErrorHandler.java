@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.models.ErrorResponse;
 
 @RestControllerAdvice
 public class ErrorHandler {
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleWrongDate(WrongDateException e) {
