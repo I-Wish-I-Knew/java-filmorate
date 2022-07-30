@@ -1,37 +1,57 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.filmorate.exceptions.DataAlreadyExistException;
-import ru.yandex.practicum.filmorate.exceptions.WrongDateException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.services.FilmService;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
-public class FilmController extends Controller<Film> {
-    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
+public class FilmController {
+    private final FilmService service;
 
-    private boolean validateDate(LocalDate releaseDate) {
-        return !releaseDate.isBefore(LocalDate.parse("1895-12-28", DateTimeFormatter.ISO_DATE));
+    @Autowired
+    public FilmController(FilmService service) {
+        this.service = service;
     }
 
-    @Override
-    protected void validate(Film film) {
-        if (data.values().stream()
-                .anyMatch(f -> f.equals(film))) {
-            RuntimeException e = new DataAlreadyExistException("Фильм уже был добавлен ранее");
-            log.error(e.getMessage());
-            throw e;
-        }
-        if (!validateDate(film.getReleaseDate())) {
-            RuntimeException e = new WrongDateException("Дата выпуска не может быть ранее 28 декабря 1895");
-            log.error(e.getMessage());
-            throw e;
-        }
+    @GetMapping("{filmId}")
+    public Film getFilm(@PathVariable int filmId) {
+        return service.get(filmId);
+    }
+
+    @GetMapping
+    public List<Film> getAll() {
+        return service.getAll();
+    }
+
+    @PostMapping
+    public Film add(@RequestBody @Valid Film film) {
+        return service.add(film);
+    }
+
+    @PutMapping
+    public Film update(@RequestBody @Valid Film film) {
+        return service.update(film);
+    }
+
+    @PutMapping(value = "{id}/like/{userId}")
+    public Film addLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        service.addLike(id, userId);
+        return service.get(id);
+    }
+
+    @DeleteMapping(value = "{id}/like/{userId}")
+    public Film deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        service.deleteLike(id, userId);
+        return service.get(id);
+    }
+
+    @GetMapping(value = {"popular?count={count}", "popular"})
+    public List<Film> getMostPopularFilms(@RequestParam(required = false) Integer count) {
+        return service.getMostPopular(count);
     }
 }
