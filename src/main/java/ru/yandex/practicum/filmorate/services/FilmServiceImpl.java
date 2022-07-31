@@ -28,19 +28,21 @@ public class FilmServiceImpl extends ServiceImpl<Film> implements FilmService {
     }
 
     public Film addLike(Integer filmId, Integer userId) {
+        Film film = storage.getAll().get(filmId);
         checkExistUser(userId);
         checkExistFilm(filmId);
-        storage.getAll().get(filmId).getLikes().add(userId);
+        film.getLikes().add(userId);
         log.debug(String.format("Пользователь %d поставил like фильму %d", userId, filmId));
-        return storage.getAll().get(filmId);
+        return film;
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
+        Film film = storage.getAll().get(filmId);
         checkExistUser(userId);
         checkExistFilm(filmId);
-        storage.getAll().get(filmId).getLikes().remove(userId);
+        film.getLikes().remove(userId);
         log.debug(String.format("Пользователю %d больше не нравится фильм %d", userId, filmId));
-        return storage.getAll().get(filmId);
+        return film;
     }
 
     public List<Film> getMostPopular(Integer count) {

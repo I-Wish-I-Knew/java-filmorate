@@ -23,4 +23,7 @@ public class Film extends AppData {
     @DecimalMin(value = "0", message = "Продолжительность фильма должна быть положительной")
     private final int duration;
     private final Set<Integer> likes = new HashSet<>();
+    private final Set<Genre> genres = new HashSet<>();
+    private final MpaRating mpaRating;
+    private int rate = 0;
 }
