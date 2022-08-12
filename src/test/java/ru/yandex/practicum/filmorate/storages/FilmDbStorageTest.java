@@ -56,7 +56,7 @@ public class FilmDbStorageTest {
     @Test
     @Order(4)
     public void testAddLike() {
-        User user = new User(1, "user@mail.com", "login", LocalDate.parse("1979-04-17",
+        User user = new User(8, "user8@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "name");
         userStorage.save(user);
 

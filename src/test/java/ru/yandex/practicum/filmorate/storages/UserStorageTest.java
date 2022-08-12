@@ -26,13 +26,11 @@ public class UserStorageTest {
     @Test()
     @Order(1)
     public void testSave() {
-        assertThat(storage.getAll().size()).isEqualTo(0);
-
         User user = new User(1, "user1@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "name");
         storage.save(user);
 
-        assertThat(storage.getAll()).hasSize(1);
+        assertThat(storage.getAll()).containsValue(user);
     }
 
     @Test
@@ -83,10 +81,15 @@ public class UserStorageTest {
     @Test
     @Order(6)
     public void testDeleteFriend() {
-        User user = storage.get(2);
-        User friend = storage.get(3);
+        User user = new User(10, "user10@mail.com", "login", LocalDate.parse("1979-04-17",
+                DateTimeFormatter.ISO_DATE), "user");
+        User friend =  new User(11, "user11@mail.com", "login", LocalDate.parse("1979-04-17",
+                DateTimeFormatter.ISO_DATE), "friend");
+        storage.save(user);
+        storage.save(friend);
+        storage.addFriend(user.getId(), friend.getId());
 
-        assertThat(storage.getFriendsForUser(2)).contains(friend);
+        assertThat(storage.getFriendsForUser(user.getId())).contains(friend);
         storage.deleteFriend(user.getId(), friend.getId());
 
         assertThat(storage.get(user.getId()).getFriends()).doesNotContain(friend.getId());
