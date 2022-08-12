@@ -71,14 +71,16 @@ public class FilmDbStorageTest {
     @Order(5)
     public void testDeleteLike() {
         Film film = storage.get(1);
-        User user = new User(1, "user@mail.com", "login", LocalDate.parse("1979-04-17",
+        User user = new User(20, "user20@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "name");
+        userStorage.save(user);
+        storage.addLike(film.getId(),user.getId());
 
-        assertThat(storage.get(1).getLikes()).hasSize(1);
+        assertThat(storage.get(film.getId()).getLikes()).contains(user.getId());
 
         storage.deleteLike(film.getId(), user.getId());
 
-        assertThat(storage.get(1).getLikes()).isEmpty();
+        assertThat(storage.get(film.getId()).getLikes()).doesNotContain(user.getId());
     }
 
     @Test
