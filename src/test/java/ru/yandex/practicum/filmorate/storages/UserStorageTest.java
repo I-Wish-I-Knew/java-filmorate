@@ -100,7 +100,6 @@ public class UserStorageTest {
     public void testGetCommonFriends() {
         User user = storage.get(1);
         User user2 = storage.get(2);
-
         User newFriend = new User(5, "user5@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "newFriend");
         storage.save(newFriend);
