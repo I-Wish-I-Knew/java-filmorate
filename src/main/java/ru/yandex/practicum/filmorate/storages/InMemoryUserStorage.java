@@ -19,7 +19,7 @@ public class InMemoryUserStorage implements DataStorage<User> {
         return users;
     }
 
-    public User add(User user) {
+    public User save(User user) {
         user.setId(getId());
         users.put(user.getId(), user);
         return user;

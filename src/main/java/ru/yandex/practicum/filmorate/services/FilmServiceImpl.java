@@ -3,57 +3,69 @@ package ru.yandex.practicum.filmorate.services;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exceptions.DataAlreadyExistException;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.WrongDateException;
 import ru.yandex.practicum.filmorate.models.Film;
-import ru.yandex.practicum.filmorate.models.User;
-import ru.yandex.practicum.filmorate.storages.DataStorage;
+import ru.yandex.practicum.filmorate.storages.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storages.UserDbStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class FilmServiceImpl extends ServiceImpl<Film> implements FilmService {
-    private final DataStorage<User> userStorage;
+public class FilmServiceImpl implements FilmService {
+    private final UserDbStorage userStorage;
+    private final FilmDbStorage storage;
 
     @Autowired
-    public FilmServiceImpl(DataStorage<Film> storage, DataStorage<User> userStorage) {
-        super(storage);
+    public FilmServiceImpl(UserDbStorage userStorage, FilmDbStorage storage) {
         this.userStorage = userStorage;
+        this.storage = storage;
+    }
+
+    @Override
+    public Film add(Film film) {
+        validateDate(film.getReleaseDate());
+        storage.save(film);
+        return film;
+    }
+
+    public Film update(Film film) {
+        checkExistFilm(film.getId());
+        storage.update(film);
+        return film;
+    }
+
+    public List<Film> getAll() {
+        List<Film> allFilms = new ArrayList<>(storage.getAll().values());
+        log.debug(String.format("Общее количество фильмов в хранилище: %d", allFilms.size()));
+        return allFilms;
+    }
+
+    public Film get(Integer id) {
+        checkExistFilm(id);
+        return storage.get(id);
     }
 
     public Film addLike(Integer filmId, Integer userId) {
-        Film film = storage.getAll().get(filmId);
         checkExistUser(userId);
         checkExistFilm(filmId);
-        film.getLikes().add(userId);
         log.debug(String.format("Пользователь %d поставил like фильму %d", userId, filmId));
-        return film;
+        return storage.addLike(filmId, userId);
     }
 
     public Film deleteLike(Integer filmId, Integer userId) {
-        Film film = storage.getAll().get(filmId);
         checkExistUser(userId);
         checkExistFilm(filmId);
-        film.getLikes().remove(userId);
         log.debug(String.format("Пользователю %d больше не нравится фильм %d", userId, filmId));
-        return film;
+        return storage.deleteLike(filmId, userId);
     }
 
     public List<Film> getMostPopular(Integer count) {
-        if (count == null) {
-            count = 10;
-        }
-        Comparator<Film> comparator = Comparator.comparingInt(film -> film.getLikes().size());
-        return storage.getAll().values().stream()
-                .sorted(comparator.reversed())
-                .limit(count)
-                .collect(Collectors.toList());
+        return storage.getMostPopular(count);
     }
 
     private void checkExistFilm(Integer id) {
@@ -68,22 +80,11 @@ public class FilmServiceImpl extends ServiceImpl<Film> implements FilmService {
         }
     }
 
-    protected void validate(Film film) {
-        List<Film> films = getAll();
-        if (films.stream()
-                .anyMatch(f -> f.equals(film))) {
-            RuntimeException e = new DataAlreadyExistException("Фильм уже был добавлен ранее");
-            log.error(e.getMessage());
-            throw e;
-        }
-        if (!validateDate(film.getReleaseDate())) {
+    private void validateDate(LocalDate releaseDate) {
+        if (releaseDate.isBefore(LocalDate.parse("1895-12-28", DateTimeFormatter.ISO_DATE))) {
             RuntimeException e = new WrongDateException("Дата выпуска не может быть ранее 28 декабря 1895");
             log.error(e.getMessage());
             throw e;
         }
-    }
-
-    private boolean validateDate(LocalDate releaseDate) {
-        return !releaseDate.isBefore(LocalDate.parse("1895-12-28", DateTimeFormatter.ISO_DATE));
     }
 }

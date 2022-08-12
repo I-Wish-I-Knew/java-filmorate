@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.models;
 
-import lombok.Data;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -12,18 +12,33 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Slf4j
-@Data
+@Setter
+@Getter
+@ToString
+@NoArgsConstructor
 public class Film extends AppData {
     @NotBlank(message = "Укажите название фильма")
-    private final String name;
+    private String name;
     @Size(max = 200, message = "Максимальная длина описания — 200 символов")
-    private final String description;
+    private String description;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private final LocalDate releaseDate;
+    private LocalDate releaseDate;
     @DecimalMin(value = "0", message = "Продолжительность фильма должна быть положительной")
-    private final int duration;
+    private Integer duration;
     private final Set<Integer> likes = new HashSet<>();
     private final Set<Genre> genres = new HashSet<>();
-    private final MpaRating mpaRating;
-    private int rate = 0;
+    @NonNull
+    private Mpa mpa;
+    private Integer rate = 0;
+
+    public Film(Integer id, String name, String description, LocalDate releaseDate,
+                Integer duration, Mpa mpa, Integer rate) {
+        super(id);
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+        this.mpa = mpa;
+        this.rate = rate;
+    }
 }

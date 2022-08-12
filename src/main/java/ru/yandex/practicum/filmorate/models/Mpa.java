@@ -1,12 +1,14 @@
 package ru.yandex.practicum.filmorate.models;
 
-import lombok.*;
-@Getter
+import lombok.Getter;
+import lombok.Setter;
+
 @Setter
-public class Genre extends AppData{
+@Getter
+public class Mpa extends AppData {
     private final String name;
 
-    public Genre(Integer id, String name) {
+    public Mpa(Integer id, String name) {
         super(id);
         this.name = name;
     }

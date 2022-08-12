@@ -4,7 +4,15 @@ import ru.yandex.practicum.filmorate.models.User;
 
 import java.util.List;
 
-public interface UserService extends Service<User> {
+public interface UserService {
+    User add(User user);
+
+    User update(User User);
+
+    List<User> getAll();
+
+    User get(Integer id);
+
     User addFriend(Integer userId, Integer friendId);
 
     User deleteFriend(Integer userId, Integer friendId);

@@ -4,11 +4,7 @@ import ru.yandex.practicum.filmorate.models.AppData;
 
 import java.util.List;
 
-public interface Service<T extends AppData> {
-    T add(T t);
-
-    T update(T t);
-
+public interface DataService<T extends AppData> {
     List<T> getAll();
 
     T get(Integer id);

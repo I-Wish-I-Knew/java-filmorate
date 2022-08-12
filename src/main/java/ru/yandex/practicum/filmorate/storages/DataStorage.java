@@ -9,7 +9,7 @@ public interface DataStorage<T extends AppData> {
 
     Map<Integer, T> getAll();
 
-    T add(T t);
+    T save(T t);
 
     T update(T t);
 }

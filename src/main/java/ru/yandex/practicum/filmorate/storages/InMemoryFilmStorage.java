@@ -19,7 +19,8 @@ public class InMemoryFilmStorage implements DataStorage<Film> {
         return films;
     }
 
-    public Film add(Film film) {
+    @Override
+    public Film save(Film film) {
         film.setId(getId());
         films.put(film.getId(), film);
         return film;

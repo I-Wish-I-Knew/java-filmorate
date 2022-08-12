@@ -1,13 +1,12 @@
 package ru.yandex.practicum.filmorate.models;
 
+import lombok.*;
+
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 public abstract class AppData {
-    protected int id;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
+    protected Integer id;
 }
