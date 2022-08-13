@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkExist(Integer id) {
-        if (!storage.getAll().containsKey(id)) {
+        if (!storage.isExists(id)) {
             throw new NotFoundException(String.format("Пользователя с %d нет в списке", id));
         }
     }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mappers.GenreRowMapper;
 import ru.yandex.practicum.filmorate.models.Genre;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
@@ -27,5 +28,11 @@ public class GenreDbStorage {
     public List<Genre> getAll() {
         sql = "SELECT * FROM GENRES";
         return jdbcTemplate.query(sql, new GenreRowMapper());
+    }
+
+    public boolean isExists(Integer genreId) {
+        sql = "SELECT * FROM GENRES WHERE GENRE_ID=?";
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{genreId},
+                ResultSet::next));
     }
 }

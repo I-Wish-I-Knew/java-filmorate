@@ -69,13 +69,13 @@ public class FilmServiceImpl implements FilmService {
     }
 
     private void checkExistFilm(Integer id) {
-        if (!storage.getAll().containsKey(id)) {
+        if (!storage.isExists(id)) {
             throw new NotFoundException(String.format("Фильма с %d нет в списке", id));
         }
     }
 
     private void checkExistUser(Integer id) {
-        if (!userStorage.getAll().containsKey(id)) {
+        if (!userStorage.isExists(id)) {
             throw new NotFoundException(String.format("Пользователя с %d нет в списке", id));
         }
     }

@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.models.User;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.List;
@@ -79,6 +80,13 @@ public class UserDbStorageImpl implements UserDbStorage {
         deleteFriends(user);
         saveUserFriends(user);
         return user;
+    }
+
+    @Override
+    public boolean isExists(Integer userId) {
+        sql = "SELECT * FROM USERS WHERE USER_ID=?";
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{userId},
+                ResultSet::next));
     }
 
     @Override

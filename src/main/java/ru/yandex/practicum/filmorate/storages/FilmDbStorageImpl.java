@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.models.Genre;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.List;
@@ -45,7 +46,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     @Override
     public Map<Integer, Film> getAll() {
         sql = "SELECT FILM_ID, FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATE, F.MPA_ID, MPA_NAME" +
-                " FROM FILMS AS F LEFT JOIN MPA M on M.MPA_ID = F.MPA_ID";
+                " FROM FILMS AS F LEFT JOIN MPA M ON M.MPA_ID = F.MPA_ID";
         List<Film> films = jdbcTemplate.query(sql, new FilmRowMapper());
         Map<Integer, Film> allFilms = films.stream()
                 .collect(Collectors.toMap(Film::getId, Function.identity()));
@@ -57,7 +58,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     @Override
     public Film save(Film film) {
         sql = "INSERT INTO FILMS (FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATE, MPA_ID)" +
-                " values (?, ?, ?, ?, ?, ?)";
+                " VALUES (?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sql, new String[]{"FILM_ID"});
@@ -106,7 +107,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
 
     @Override
     public Film deleteLike(Integer filmId, Integer userId) {
-        sql = "DELETE from FILM_LIKES where FILM_ID=? AND USER_ID = ?";
+        sql = "DELETE FROM FILM_LIKES WHERE FILM_ID=? AND USER_ID = ?";
         jdbcTemplate.update(sql, filmId, userId);
         Film film = get(filmId);
         film.setRate(film.getRate() - 1);
@@ -122,13 +123,20 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         return jdbcTemplate.query(sql, new FilmRowMapper());
     }
 
+    @Override
+    public boolean isExists(Integer filmId) {
+        sql = "SELECT * FROM FILMS WHERE FILM_ID=?";
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{filmId},
+                ResultSet::next));
+    }
+
     private List<Integer> loadFilmLikes(Film film) {
         sql = "SELECT USER_ID FROM FILM_LIKES WHERE FILM_ID=?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("user_id"), film.getId());
     }
 
     private Set<Integer> saveFilmLikes(Film film) {
-        sql = "INSERT INTO FILM_LIKES (FILM_ID, USER_ID) values (?, ?)";
+        sql = "INSERT INTO FILM_LIKES (FILM_ID, USER_ID) VALUES (?, ?)";
         film.getLikes().forEach(like -> jdbcTemplate.update(sql, film.getId(), like));
         return film.getLikes();
     }
@@ -144,19 +152,18 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     private Set<Genre> saveGenresForFilm(Film film) {
-        sql = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) values (?, ?)";
+        sql = "INSERT INTO FILM_GENRES (FILM_ID, GENRE_ID) VALUES (?, ?)";
         film.getGenres().forEach(genre -> jdbcTemplate.update(sql, film.getId(), genre.getId()));
         return film.getGenres();
     }
 
     private void deleteGenresForFilm(Film film) {
-        sql = "delete from FILM_GENRES where FILM_ID = ?";
+        sql = "DELETE FROM FILM_GENRES WHERE FILM_ID = ?";
         jdbcTemplate.update(sql, film.getId());
     }
 
     private void deleteLikesForFilm(Film film) {
-        sql = "delete from FILM_LIKES where FILM_ID = ?";
+        sql = "DELETE FROM FILM_LIKES WHERE FILM_ID = ?";
         jdbcTemplate.update(sql, film.getId());
     }
-
 }

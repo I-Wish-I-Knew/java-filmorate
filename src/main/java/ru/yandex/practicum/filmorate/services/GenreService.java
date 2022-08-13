@@ -28,9 +28,9 @@ public class GenreService implements DataService<Genre> {
         return storage.get(id);
     }
 
-    private void checkExist(Integer id) {
-        if (storage.getAll().stream().noneMatch(genre -> genre.getId() == id)) {
-            throw new NotFoundException(String.format("Жанра с %d нет в списке", id));
+    private void checkExist(Integer genreId) {
+        if (!storage.isExists(genreId)) {
+            throw new NotFoundException(String.format("Жанра с %d нет в списке", genreId));
         }
     }
 }

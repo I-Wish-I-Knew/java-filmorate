@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mappers.MpaRawMapper;
 import ru.yandex.practicum.filmorate.models.Mpa;
 
+import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
@@ -26,5 +27,11 @@ public class MpaDbStorage {
     public List<Mpa> getAll() {
         sql = "SELECT * FROM MPA";
         return jdbcTemplate.query(sql, new MpaRawMapper());
+    }
+
+    public boolean isExists(Integer mpaId) {
+        sql = "SELECT * FROM MPA WHERE MPA_ID=?";
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{mpaId},
+                ResultSet::next));
     }
 }

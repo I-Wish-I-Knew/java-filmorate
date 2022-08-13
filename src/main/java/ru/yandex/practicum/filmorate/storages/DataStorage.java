@@ -12,4 +12,6 @@ public interface DataStorage<T extends AppData> {
     T save(T t);
 
     T update(T t);
+
+    boolean isExists(Integer id);
 }

@@ -30,7 +30,7 @@ public class MpaService implements DataService<Mpa> {
     }
 
     private void checkExist(Integer id) {
-        if (storage.getAll().stream().noneMatch(mpa -> mpa.getId() == id)) {
+        if (!storage.isExists(id)) {
             throw new NotFoundException(String.format("Мпа с %d нет в списке", id));
         }
     }
