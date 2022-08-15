@@ -1,18 +1,10 @@
-package ru.yandex.practicum.filmorate.services;
+package ru.yandex.practicum.filmorate.storages;
 
 import ru.yandex.practicum.filmorate.models.Film;
 
 import java.util.List;
 
-public interface FilmService {
-    Film add(Film film);
-
-    Film update(Film film);
-
-    List<Film> getAll();
-
-    Film get(Integer id);
-
+public interface FilmDbStorage extends DataStorage<Film> {
     Film addLike(Integer filmId, Integer userId);
 
     Film deleteLike(Integer filmId, Integer userId);

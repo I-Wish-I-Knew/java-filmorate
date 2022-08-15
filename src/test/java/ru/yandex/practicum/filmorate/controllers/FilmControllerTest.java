@@ -24,7 +24,8 @@ class FilmControllerTest {
         String filmGson = "{\"name\":\"\","
                 + "\"description\":\"description\","
                 + "\"releaseDate\":\"1967-03-25\","
-                + "\"duration\":100}";
+                + "\"duration\":100,"
+                + "\"mpa\": {\"id\":1}}";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -38,7 +39,8 @@ class FilmControllerTest {
         String filmGson = "{\"name\":null,"
                 + "\"description\":\"description\","
                 + "\"releaseDate\":\"1967-03-25\","
-                + "\"duration\":100}";
+                + "\"duration\":100,"
+                + "\"mpa\": {\"id\":1}}";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -54,7 +56,8 @@ class FilmControllerTest {
                 "He is often depicted as a peerless spy, notorious womanizer, and masculine icon. " +
                 "He is also designated as agent 007 (always artic\","
                 + "\"releaseDate\":\"1967-03-25\","
-                + "\"duration\":100}";
+                + "\"duration\":100,"
+                + "\"mpa\": {\"id\":1}}";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -70,7 +73,8 @@ class FilmControllerTest {
                 "He is often depicted as a peerless spy, notorious womanizer, and masculine icon. " +
                 "He is also designated as agent 007 (always art\","
                 + "\"releaseDate\":\"1967-03-25\","
-                + "\"duration\":100}";
+                + "\"duration\":100,"
+                + "\"mpa\": {\"id\":1}}";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -84,8 +88,8 @@ class FilmControllerTest {
         String filmGson = "{\"name\":\"James Bond\","
                 + "\"description\":\"description\","
                 + "\"releaseDate\":\"1895-12-27\","
-                + "\"duration\":100}";
-
+                + "\"duration\":100,"
+                + "\"mpa\": {\"id\":1}}";
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(filmGson))
@@ -93,12 +97,13 @@ class FilmControllerTest {
     }
 
     @Test
-    @DisplayName("Фильм с датой выпуска 28.12.1895 успешно сохраняется")
-    void shouldSaveFilmWhenFilmsReleaseDateIsNotBefore28_12_1895() throws Exception {
+    @DisplayName("Фильм с датой выпуска 29.12.1895 успешно сохраняется")
+    void shouldSaveFilmWhenFilmsReleaseDateIsNotBefore29_12_1895() throws Exception {
         String filmGson = "{\"name\":\"James Bond\","
                 + "\"description\":\"description\","
-                + "\"releaseDate\":\"1895-12-28\","
-                + "\"duration\":100}";
+                + "\"releaseDate\":\"1895-12-29\","
+                + "\"duration\":100,"
+                + "\"mpa\": { \"id\":1}}";
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +117,8 @@ class FilmControllerTest {
         String filmGson = "{\"name\":\"James Bond\","
                 + "\"description\":\"description\","
                 + "\"releaseDate\":\"1895-12-28\","
-                + "\"duration\":-1}";
+                + "\"duration\":-1},"
+                + "\"mpa\": {\"id\":1}";
 
 
         mockMvc.perform(MockMvcRequestBuilders.post("/films")
@@ -127,7 +133,8 @@ class FilmControllerTest {
         String filmGson = "{\"name\":\"James Bond\","
                 + "\"description\":\"description\","
                 + "\"releaseDate\":\"1895-12-28\","
-                + "\"duration\":100}";
+                + "\"duration\":100,"
+                + "\"mpa\": {\"id\":1}}";
 
         mockMvc.perform(MockMvcRequestBuilders.put("/films")
                         .contentType(MediaType.APPLICATION_JSON)
