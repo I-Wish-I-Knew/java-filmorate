@@ -2,12 +2,16 @@ package ru.yandex.practicum.filmorate.storages;
 
 import ru.yandex.practicum.filmorate.models.AppData;
 
-import java.util.List;
+import java.util.Map;
 
 public interface DataStorage<T extends AppData> {
-    T get(int id);
+    T get(Integer id);
 
-    List<T> getAll();
+    Map<Integer, T> getAll();
 
-    boolean isExists(int id);
+    T save(T t);
+
+    T update(T t);
+
+    boolean isExists(Integer id);
 }

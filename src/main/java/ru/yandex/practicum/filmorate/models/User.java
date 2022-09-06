@@ -18,14 +18,14 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 public class User extends AppData {
-    @NotBlank
-    @Email
+    @NotBlank(message = "Укажите email")
+    @Email(message = "Укажите корректный email")
     private String email;
-    @NotBlank
-    @Pattern(regexp = ("\\S+"))
+    @NotBlank(message = "Укажите логин")
+    @Pattern(regexp = ("\\S+"), message = "Укажите логин без пробелов")
     private String login;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @Past
+    @Past(message = "Дата рождения должна быть в прошлом.")
     private LocalDate birthday;
     @JsonIgnore
     private final Set<Integer> friends = new HashSet<>();
@@ -38,4 +38,5 @@ public class User extends AppData {
         this.birthday = birthday;
         this.name = name;
     }
+
 }
