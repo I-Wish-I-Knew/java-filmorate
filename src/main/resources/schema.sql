@@ -39,7 +39,7 @@ create table IF NOT EXISTS FILMS
     MPA_ID INTEGER,
     constraint FILMS
         primary key (FILM_ID),
-    constraint "FK_MPA_ID_MPA "
+    constraint "FK_MPA_ID_MPA"
         foreign key (MPA_ID) references MPA
 );
 

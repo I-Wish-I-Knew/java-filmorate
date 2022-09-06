@@ -17,13 +17,13 @@ import java.util.Set;
 @ToString
 @NoArgsConstructor
 public class Film extends AppData {
-    @NotBlank(message = "Укажите название фильма")
+    @NotBlank
     private String name;
-    @Size(max = 200, message = "Максимальная длина описания — 200 символов")
+    @Size(max = 200)
     private String description;
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate releaseDate;
-    @DecimalMin(value = "0", message = "Продолжительность фильма должна быть положительной")
+    @DecimalMin(value = "0")
     private Integer duration;
     private final Set<Integer> likes = new HashSet<>();
     private final Set<Genre> genres = new HashSet<>();
