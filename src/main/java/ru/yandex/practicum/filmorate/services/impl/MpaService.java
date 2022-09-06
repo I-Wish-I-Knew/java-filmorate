@@ -1,10 +1,11 @@
-package ru.yandex.practicum.filmorate.services;
+package ru.yandex.practicum.filmorate.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Mpa;
-import ru.yandex.practicum.filmorate.storages.MpaDbStorage;
+import ru.yandex.practicum.filmorate.services.DataService;
+import ru.yandex.practicum.filmorate.storages.impl.MpaDbStorage;
 
 import java.util.List;
 

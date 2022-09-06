@@ -5,9 +5,14 @@ import ru.yandex.practicum.filmorate.models.Film;
 import java.util.List;
 
 public interface FilmDbStorage extends DataStorage<Film> {
-    Film addLike(Integer filmId, Integer userId);
 
-    Film deleteLike(Integer filmId, Integer userId);
+    Film save(Film film);
 
-    List<Film> getMostPopular(Integer count);
+    Film update(Film film);
+
+    void saveLike(int filmId, int userId);
+
+    void deleteLike(int filmId, int userId);
+
+    List<Film> getMostPopular(int count);
 }

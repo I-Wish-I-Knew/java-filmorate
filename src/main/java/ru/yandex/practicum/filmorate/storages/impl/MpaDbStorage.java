@@ -1,16 +1,17 @@
-package ru.yandex.practicum.filmorate.storages;
+package ru.yandex.practicum.filmorate.storages.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mappers.MpaRawMapper;
 import ru.yandex.practicum.filmorate.models.Mpa;
+import ru.yandex.practicum.filmorate.storages.DataStorage;
 
 import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
-public class MpaDbStorage {
+public class MpaDbStorage implements DataStorage<Mpa> {
     private final JdbcTemplate jdbcTemplate;
     private String sql;
 
@@ -19,7 +20,7 @@ public class MpaDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Mpa get(Integer id) {
+    public Mpa get(int id) {
         sql = "SELECT * FROM MPA WHERE MPA_ID=?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, new MpaRawMapper());
     }
@@ -29,7 +30,7 @@ public class MpaDbStorage {
         return jdbcTemplate.query(sql, new MpaRawMapper());
     }
 
-    public boolean isExists(Integer mpaId) {
+    public boolean isExists(int mpaId) {
         sql = "SELECT * FROM MPA WHERE MPA_ID=?";
         return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{mpaId},
                 ResultSet::next));

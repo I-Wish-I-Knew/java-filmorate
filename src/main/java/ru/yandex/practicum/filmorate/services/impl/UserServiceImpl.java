@@ -1,13 +1,13 @@
-package ru.yandex.practicum.filmorate.services;
+package ru.yandex.practicum.filmorate.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.services.UserService;
 import ru.yandex.practicum.filmorate.storages.UserDbStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAll() {
-        List<User> allUsers = new ArrayList<>(storage.getAll().values());
+        List<User> allUsers = storage.getAll();
         log.debug(String.format("Общее количество пользователей в хранилище: %d", allUsers.size()));
         return allUsers;
     }
@@ -58,19 +58,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addFriend(Integer userId, Integer friendId) {
+    public void addFriend(Integer userId, Integer friendId) {
         checkExist(userId);
         checkExist(friendId);
+        storage.addFriend(userId, friendId);
         log.debug(String.format("Пользователи %d и %d стали друзьями", userId, friendId));
-        return storage.addFriend(userId, friendId);
     }
 
     @Override
-    public User deleteFriend(Integer userId, Integer friendId) {
+    public void deleteFriend(Integer userId, Integer friendId) {
         checkExist(userId);
         checkExist(friendId);
+        storage.deleteFriend(userId, friendId);
         log.debug(String.format("Пользователи %d и %d больше не друзья", userId, friendId));
-        return storage.deleteFriend(userId, friendId);
     }
 
     @Override
