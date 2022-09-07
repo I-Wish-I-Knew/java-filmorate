@@ -118,9 +118,9 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("При попытке обновить пользователя, которого нет в списке сервер возвращает ошибку")
+    @DisplayName("При попытке обновить пользователя, которого нет сервер возвращает ошибку")
     void shouldNotUpdateUserWhenUserNotExist() throws Exception {
-        String userGson = "{\"email\":\"email@email.com\","
+        String userGson = "{\"id\":10000, \"email\":\"email@email.com\","
                 + "\"login\":\"login\","
                 + "\"name\":\"name\","
                 + "\"birthday\":\"2021-03-26\"}";

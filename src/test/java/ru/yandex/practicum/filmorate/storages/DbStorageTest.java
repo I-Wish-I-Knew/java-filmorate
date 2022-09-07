@@ -89,16 +89,27 @@ public class DbStorageTest {
     @Test
     @Order(6)
     public void testGetMostPopular() {
-        Film film = new Film(2, "new film2", "description", LocalDate.parse("1979-04-17",
+        Film film2 = new Film(2, "new film2", "description", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), 100, new Mpa(1, "G"), 5);
 
-        Film film2 = new Film(3, "new film3", "description", LocalDate.parse("1979-04-17",
+        Film film3 = new Film(3, "new film3", "description", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), 100, new Mpa(1, "G"), 7);
 
-        filmStorage.save(film);
-        filmStorage.save(film2);
+        User user1000 = new User(1000, "user1000@mail.com", "user1000", LocalDate.parse("1979-04-17",
+                DateTimeFormatter.ISO_DATE), "name");
 
-        assertThat(filmStorage.getMostPopular(1)).contains(film2).hasSize(1);
+        User user1001 = new User(1001, "user1001@mail.com", "user1001", LocalDate.parse("1979-04-17",
+                DateTimeFormatter.ISO_DATE), "name");
+
+        filmStorage.save(film2);
+        filmStorage.save(film3);
+        userStorage.save(user1000);
+        userStorage.save(user1001);
+        filmStorage.saveLike(film3.getId(), user1000.getId());
+        filmStorage.saveLike(film3.getId(), user1001.getId());
+
+
+        assertThat(filmStorage.getMostPopular(1)).contains(film3).hasSize(1);
     }
 
     @Test

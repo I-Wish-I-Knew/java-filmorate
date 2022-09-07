@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storages;
+package ru.yandex.practicum.filmorate.storages.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mappers.UserRowMapper;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storages.UserDbStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -15,9 +16,6 @@ import java.sql.ResultSet;
 import java.sql.Types;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
@@ -32,26 +30,24 @@ public class UserDbStorageImpl implements UserDbStorage {
     }
 
     @Override
-    public User get(Integer id) {
-        sql = "SELECT * FROM USERS WHERE USER_ID=?";
+    public User get(int id) {
+        sql = "SELECT * FROM users WHERE user_id = ?";
         User user = jdbcTemplate.queryForObject(sql, new Object[]{id}, new UserRowMapper());
-        loadUserFriends(id).stream().forEach(friend -> user.getFriends().add(friend));
+        user.getFriends().addAll(loadUserFriends(id));
         return user;
     }
 
     @Override
-    public Map<Integer, User> getAll() {
-        sql = "SELECT * FROM USERS";
+    public List<User> getAll() {
+        sql = "SELECT * FROM users";
         List<User> users = jdbcTemplate.query(sql, new UserRowMapper());
-        Map<Integer, User> allUsers = users.stream()
-                .collect(Collectors.toMap(User::getId, Function.identity()));
-        allUsers.keySet().forEach(id -> addFriendsForUser(allUsers.get(id), loadUserFriends(id)));
-        return allUsers;
+        users.forEach(user -> user.getFriends().addAll(loadUserFriends(user.getId())));
+        return users;
     }
 
     @Override
     public User save(User user) {
-        sql = "INSERT INTO USERS (EMAIL, LOGIN, USER_NAME, BIRTHDAY) values (?, ?, ?, ?)";
+        sql = "INSERT INTO USERS (email, login, user_name, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement stmt = connection.prepareStatement(sql, new String[]{"USER_ID"});
@@ -67,83 +63,60 @@ public class UserDbStorageImpl implements UserDbStorage {
             return stmt;
         }, keyHolder);
         user.setId(keyHolder.getKey().intValue());
-        deleteFriends(user);
-        saveUserFriends(user);
         return user;
     }
 
     @Override
     public User update(User user) {
-        sql = "UPDATE USERS SET user_name=?, email=?, login=?, birthday=? WHERE USER_ID=?";
+        sql = "UPDATE users SET user_name = ?, email = ?, login = ?, birthday = ? " +
+                "WHERE user_id = ?";
         jdbcTemplate.update(sql, user.getName(), user.getEmail(), user.getLogin(),
                 user.getBirthday(), user.getId());
-        deleteFriends(user);
-        saveUserFriends(user);
         return user;
     }
 
     @Override
-    public boolean isExists(Integer userId) {
-        sql = "SELECT * FROM USERS WHERE USER_ID=?";
+    public boolean isExists(int userId) {
+        sql = "SELECT * FROM users WHERE user_id = ?";
         return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{userId},
                 ResultSet::next));
     }
 
     @Override
-    public List<User> getFriendsForUser(Integer userId) {
+    public List<User> getFriendsForUser(int userId) {
         return loadUserFriends(userId).stream()
                 .map(this::get)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public User addFriend(Integer userId, Integer friendId) {
-        User user = get(userId);
-        sql = "INSERT INTO USER_FRIENDS (USER_ID, FRIEND_ID) values (?, ?)";
+    public void addFriend(int userId, int friendId) {
+        sql = "INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?)";
         jdbcTemplate.update(sql, userId, friendId);
-        user.getFriends().add(friendId);
-        update(user);
-        return get(userId);
     }
 
     @Override
-    public User deleteFriend(Integer userId, Integer friendId) {
-        User user = get(userId);
-        sql = "DELETE from USER_FRIENDS where USER_ID=? AND FRIEND_ID = ?";
+    public void deleteFriend(int userId, int friendId) {
+        sql = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sql, userId, friendId);
-        user.getFriends().remove(friendId);
-        update(user);
-        return user;
     }
 
     @Override
-    public List<User> getCommonFriends(Integer user1Id, Integer user2Id) {
-        sql = "SELECT U1.FRIEND_ID FROM USER_FRIENDS AS U1 JOIN USER_FRIENDS AS U2" +
-                " ON U1.FRIEND_ID = U2.FRIEND_ID WHERE U1.USER_ID=? AND U2.USER_ID=?";
+    public List<User> getCommonFriends(int user1Id, int user2Id) {
+        sql = "SELECT u1.friend_id FROM user_friends AS u1 " +
+                "INNER JOIN user_friends AS u2 ON u1.friend_id = u2.friend_id " +
+                "WHERE u1.user_id = ? AND u2.user_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                         rs.getInt("friend_id"), user1Id, user2Id).stream()
                 .map(this::get)
                 .collect(Collectors.toList());
     }
 
-    private List<Integer> loadUserFriends(Integer id) {
-        sql = "SELECT FRIEND_ID FROM USER_FRIENDS WHERE USER_ID=?";
+    private List<Integer> loadUserFriends(int id) {
+        sql = "SELECT friend_id FROM user_friends WHERE user_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 rs.getInt("friend_id"), id);
     }
-
-    private void addFriendsForUser(User user, List<Integer> friends) {
-        friends.forEach(friend -> user.getFriends().add(friend));
-    }
-
-    private Set<Integer> saveUserFriends(User user) {
-        sql = "INSERT INTO USER_FRIENDS (USER_ID, FRIEND_ID) values (?, ?)";
-        user.getFriends().forEach(friend -> jdbcTemplate.update(sql, user.getId(), friend));
-        return user.getFriends();
-    }
-
-    private void deleteFriends(User user) {
-        sql = "delete from USER_FRIENDS where USER_ID = ?";
-        jdbcTemplate.update(sql, user.getId());
-    }
 }
+
+

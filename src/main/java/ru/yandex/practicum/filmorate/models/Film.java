@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.models;
 
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.DecimalMin;
@@ -11,7 +10,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@Slf4j
 @Setter
 @Getter
 @ToString
