@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.models.Mpa;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storages.impl.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storages.impl.MpaDbStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -65,7 +67,7 @@ public class DbStorageTest {
 
         assertThat(filmStorage.get(1).getLikes()).isEmpty();
 
-        filmStorage.addLike(1, user.getId());
+        filmStorage.saveLike(1, user.getId());
 
         assertThat(filmStorage.get(1).getLikes()).hasSize(1);
     }
@@ -77,7 +79,7 @@ public class DbStorageTest {
         User user = new User(20, "user20@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "name");
         userStorage.save(user);
-        filmStorage.addLike(film.getId(), user.getId());
+        filmStorage.saveLike(film.getId(), user.getId());
 
         assertThat(filmStorage.get(film.getId()).getLikes()).contains(user.getId());
 
@@ -119,7 +121,7 @@ public class DbStorageTest {
                 DateTimeFormatter.ISO_DATE), "name");
         userStorage.save(user);
 
-        assertThat(userStorage.getAll()).containsValue(user);
+        assertThat(userStorage.getAll()).contains(user);
     }
 
     @Test
