@@ -1,10 +1,11 @@
-package ru.yandex.practicum.filmorate.services;
+package ru.yandex.practicum.filmorate.services.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.models.Genre;
-import ru.yandex.practicum.filmorate.storages.GenreDbStorage;
+import ru.yandex.practicum.filmorate.services.DataService;
+import ru.yandex.practicum.filmorate.storages.impl.GenreDbStorage;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class GenreService implements DataService<Genre> {
     }
 
     private void checkExist(Integer genreId) {
-        if (!storage.isExists(genreId)) {
+        if (!storage.containsInStorage(genreId)) {
             throw new NotFoundException(String.format("Жанра с %d нет в списке", genreId));
         }
     }

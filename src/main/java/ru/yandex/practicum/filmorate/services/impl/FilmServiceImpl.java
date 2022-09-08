@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.services;
+package ru.yandex.practicum.filmorate.services.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exceptions.WrongDateException;
 import ru.yandex.practicum.filmorate.models.Film;
+import ru.yandex.practicum.filmorate.services.FilmService;
 import ru.yandex.practicum.filmorate.storages.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storages.UserDbStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,7 +40,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     public List<Film> getAll() {
-        List<Film> allFilms = new ArrayList<>(storage.getAll().values());
+        List<Film> allFilms = storage.getAll();
         log.debug(String.format("Общее количество фильмов в хранилище: %d", allFilms.size()));
         return allFilms;
     }
@@ -50,18 +50,18 @@ public class FilmServiceImpl implements FilmService {
         return storage.get(id);
     }
 
-    public Film addLike(Integer filmId, Integer userId) {
+    public void addLike(Integer filmId, Integer userId) {
         checkExistUser(userId);
         checkExistFilm(filmId);
         log.debug(String.format("Пользователь %d поставил like фильму %d", userId, filmId));
-        return storage.addLike(filmId, userId);
+        storage.saveLike(filmId, userId);
     }
 
-    public Film deleteLike(Integer filmId, Integer userId) {
+    public void deleteLike(Integer filmId, Integer userId) {
         checkExistUser(userId);
         checkExistFilm(filmId);
         log.debug(String.format("Пользователю %d больше не нравится фильм %d", userId, filmId));
-        return storage.deleteLike(filmId, userId);
+        storage.deleteLike(filmId, userId);
     }
 
     public List<Film> getMostPopular(Integer count) {
@@ -69,13 +69,13 @@ public class FilmServiceImpl implements FilmService {
     }
 
     private void checkExistFilm(Integer id) {
-        if (!storage.isExists(id)) {
+        if (!storage.containsInStorage(id)) {
             throw new NotFoundException(String.format("Фильма с %d нет в списке", id));
         }
     }
 
     private void checkExistUser(Integer id) {
-        if (!userStorage.isExists(id)) {
+        if (!userStorage.containsInStorage(id)) {
             throw new NotFoundException(String.format("Пользователя с %d нет в списке", id));
         }
     }

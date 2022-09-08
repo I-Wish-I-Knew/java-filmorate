@@ -12,6 +12,8 @@ import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.models.Genre;
 import ru.yandex.practicum.filmorate.models.Mpa;
 import ru.yandex.practicum.filmorate.models.User;
+import ru.yandex.practicum.filmorate.storages.impl.GenreDbStorage;
+import ru.yandex.practicum.filmorate.storages.impl.MpaDbStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -58,14 +60,14 @@ public class DbStorageTest {
 
     @Test
     @Order(4)
-    public void testAddLike() {
+    public void testSaveLike() {
         User user = new User(8, "user8@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "name");
         userStorage.save(user);
 
         assertThat(filmStorage.get(1).getLikes()).isEmpty();
 
-        filmStorage.addLike(1, user.getId());
+        filmStorage.saveLike(1, user.getId());
 
         assertThat(filmStorage.get(1).getLikes()).hasSize(1);
     }
@@ -77,7 +79,7 @@ public class DbStorageTest {
         User user = new User(20, "user20@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "name");
         userStorage.save(user);
-        filmStorage.addLike(film.getId(), user.getId());
+        filmStorage.saveLike(film.getId(), user.getId());
 
         assertThat(filmStorage.get(film.getId()).getLikes()).contains(user.getId());
 
@@ -89,16 +91,27 @@ public class DbStorageTest {
     @Test
     @Order(6)
     public void testGetMostPopular() {
-        Film film = new Film(2, "new film2", "description", LocalDate.parse("1979-04-17",
+        Film film2 = new Film(2, "new film2", "description", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), 100, new Mpa(1, "G"), 5);
 
-        Film film2 = new Film(3, "new film3", "description", LocalDate.parse("1979-04-17",
+        Film film3 = new Film(3, "new film3", "description", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), 100, new Mpa(1, "G"), 7);
 
-        filmStorage.save(film);
-        filmStorage.save(film2);
+        User user1000 = new User(1000, "user1000@mail.com", "user1000", LocalDate.parse("1979-04-17",
+                DateTimeFormatter.ISO_DATE), "name");
 
-        assertThat(filmStorage.getMostPopular(1)).contains(film2).hasSize(1);
+        User user1001 = new User(1001, "user1001@mail.com", "user1001", LocalDate.parse("1979-04-17",
+                DateTimeFormatter.ISO_DATE), "name");
+
+        filmStorage.save(film2);
+        filmStorage.save(film3);
+        userStorage.save(user1000);
+        userStorage.save(user1001);
+        filmStorage.saveLike(film3.getId(), user1000.getId());
+        filmStorage.saveLike(film3.getId(), user1001.getId());
+
+
+        assertThat(filmStorage.getMostPopular(1)).contains(film3).hasSize(1);
     }
 
     @Test
@@ -108,7 +121,7 @@ public class DbStorageTest {
                 DateTimeFormatter.ISO_DATE), "name");
         userStorage.save(user);
 
-        assertThat(userStorage.getAll()).containsValue(user);
+        assertThat(userStorage.getAll()).contains(user);
     }
 
     @Test
@@ -129,11 +142,11 @@ public class DbStorageTest {
 
     @Test
     @Order(10)
-    public void testAddFriend() {
+    public void testSaveFriend() {
         User friend = new User(2, "user2@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "friend");
         userStorage.save(friend);
-        userStorage.addFriend(1, friend.getId());
+        userStorage.saveFriend(1, friend.getId());
 
         assertThat(userStorage.get(1).getFriends()).contains(friend.getId());
     }
@@ -148,10 +161,10 @@ public class DbStorageTest {
                 DateTimeFormatter.ISO_DATE), "friend");
         userStorage.save(friend1);
         userStorage.save(friend2);
-        userStorage.addFriend(user.getId(), friend1.getId());
-        userStorage.addFriend(user.getId(), friend2.getId());
+        userStorage.saveFriend(user.getId(), friend1.getId());
+        userStorage.saveFriend(user.getId(), friend2.getId());
 
-        assertThat(userStorage.getFriendsForUser(user.getId())).contains(friend1, friend2)
+        assertThat(userStorage.getFriendsByUser(user.getId())).contains(friend1, friend2)
                 .hasSize(2);
 
     }
@@ -165,9 +178,9 @@ public class DbStorageTest {
                 DateTimeFormatter.ISO_DATE), "friend");
         userStorage.save(user);
         userStorage.save(friend);
-        userStorage.addFriend(user.getId(), friend.getId());
+        userStorage.saveFriend(user.getId(), friend.getId());
 
-        assertThat(userStorage.getFriendsForUser(user.getId())).contains(friend);
+        assertThat(userStorage.getFriendsByUser(user.getId())).contains(friend);
         userStorage.deleteFriend(user.getId(), friend.getId());
 
         assertThat(userStorage.get(user.getId()).getFriends()).doesNotContain(friend.getId());
@@ -181,8 +194,8 @@ public class DbStorageTest {
         User newFriend = new User(5, "user5@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "newFriend");
         userStorage.save(newFriend);
-        userStorage.addFriend(user.getId(), newFriend.getId());
-        userStorage.addFriend(user2.getId(), newFriend.getId());
+        userStorage.saveFriend(user.getId(), newFriend.getId());
+        userStorage.saveFriend(user2.getId(), newFriend.getId());
 
         assertThat(userStorage.getCommonFriends(user.getId(), user2.getId())).contains(newFriend).hasSize(1);
     }
@@ -191,40 +204,40 @@ public class DbStorageTest {
     @Order(14)
     public void testIsFilmExists() {
         Film film = filmStorage.get(1);
-        assertThat(filmStorage.isExists(film.getId())).isTrue();
+        assertThat(filmStorage.containsInStorage(film.getId())).isTrue();
 
         Film film2 = new Film(5, "new film5", "description", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), 100, new Mpa(1, "G"), 7);
-        assertThat(filmStorage.isExists(film2.getId())).isFalse();
+        assertThat(filmStorage.containsInStorage(film2.getId())).isFalse();
     }
 
     @Test
     @Order(15)
     public void testIsUserExists() {
         User user = userStorage.get(1);
-        assertThat(userStorage.isExists(user.getId())).isTrue();
+        assertThat(userStorage.containsInStorage(user.getId())).isTrue();
 
         User user2 = new User(100, "user100@mail.com", "login", LocalDate.parse("1979-04-17",
                 DateTimeFormatter.ISO_DATE), "user");
-        assertThat(userStorage.isExists(user2.getId())).isFalse();
+        assertThat(userStorage.containsInStorage(user2.getId())).isFalse();
     }
 
     @Test
     public void testIsGenreExists() {
         Genre genre = genreStorage.get(1);
-        assertThat(genreStorage.isExists(genre.getId())).isTrue();
+        assertThat(genreStorage.containsInStorage(genre.getId())).isTrue();
 
         Genre genre1 = new Genre(10, "жанр");
-        assertThat(genreStorage.isExists(genre1.getId())).isFalse();
+        assertThat(genreStorage.containsInStorage(genre1.getId())).isFalse();
     }
 
     @Test
     public void testIsMpaExists() {
         Mpa mpa = mpaStorage.get(1);
-        assertThat(mpaStorage.isExists(mpa.getId())).isTrue();
+        assertThat(mpaStorage.containsInStorage(mpa.getId())).isTrue();
 
         Mpa mpa1 = new Mpa(10, "мпа");
-        assertThat(mpaStorage.isExists(mpa1.getId())).isFalse();
+        assertThat(mpaStorage.containsInStorage(mpa1.getId())).isFalse();
     }
 
     @Test

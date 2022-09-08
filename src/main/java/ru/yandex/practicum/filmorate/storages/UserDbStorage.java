@@ -5,13 +5,17 @@ import ru.yandex.practicum.filmorate.models.User;
 import java.util.List;
 
 public interface UserDbStorage extends DataStorage<User> {
-    List<User> getFriendsForUser(Integer userId);
 
-    User addFriend(Integer userId, Integer friend_id);
+    User save(User user);
 
-    User deleteFriend(Integer user_id, Integer friendId);
+    User update(User user);
 
-    List<User> getCommonFriends(Integer user1Id, Integer user2Id);
+    List<User> getFriendsByUser(int userId);
 
+    void saveFriend(int userId, int friend_id);
+
+    void deleteFriend(int user_id, int friendId);
+
+    List<User> getCommonFriends(int user1Id, int user2Id);
 
 }

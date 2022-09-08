@@ -128,9 +128,9 @@ class FilmControllerTest {
     }
 
     @Test
-    @DisplayName("При попытке обновить фильм, которого нет в списке сервер возвращает ошибку")
+    @DisplayName("При попытке обновить фильм, которого нет сервер возвращает ошибку")
     void shouldNotUpdateFilmWhenFilmNotExist() throws Exception {
-        String filmGson = "{\"name\":\"James Bond\","
+        String filmGson = "{\"id\":10000, \"name\":\"James Bond\","
                 + "\"description\":\"description\","
                 + "\"releaseDate\":\"1895-12-28\","
                 + "\"duration\":100,"
