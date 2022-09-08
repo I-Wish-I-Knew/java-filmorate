@@ -9,5 +9,5 @@ public interface DataStorage<T extends AppData> {
 
     List<T> getAll();
 
-    boolean isExists(int id);
+    boolean containsInStorage(int id);
 }

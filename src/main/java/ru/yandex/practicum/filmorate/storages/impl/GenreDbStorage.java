@@ -22,17 +22,17 @@ public class GenreDbStorage implements DataStorage<Genre> {
     }
 
     public Genre get(int id) {
-        sql = "SELECT * FROM GENRES WHERE GENRE_ID=?";
+        sql = "SELECT genre_id, genre_name FROM genres WHERE genre_id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, new GenreRowMapper());
     }
 
     public List<Genre> getAll() {
-        sql = "SELECT * FROM GENRES";
+        sql = "SELECT genre_id, genre_name FROM genres";
         return jdbcTemplate.query(sql, new GenreRowMapper());
     }
 
-    public boolean isExists(int genreId) {
-        sql = "SELECT * FROM GENRES WHERE GENRE_ID=?";
+    public boolean containsInStorage(int genreId) {
+        sql = "SELECT genre_id, genre_name FROM genres WHERE genre_id = ?";
         return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{genreId},
                 ResultSet::next));
     }

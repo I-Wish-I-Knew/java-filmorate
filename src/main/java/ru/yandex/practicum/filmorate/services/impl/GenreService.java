@@ -30,7 +30,7 @@ public class GenreService implements DataService<Genre> {
     }
 
     private void checkExist(Integer genreId) {
-        if (!storage.isExists(genreId)) {
+        if (!storage.containsInStorage(genreId)) {
             throw new NotFoundException(String.format("Жанра с %d нет в списке", genreId));
         }
     }

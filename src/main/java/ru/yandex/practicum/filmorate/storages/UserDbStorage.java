@@ -10,9 +10,9 @@ public interface UserDbStorage extends DataStorage<User> {
 
     User update(User user);
 
-    List<User> getFriendsForUser(int userId);
+    List<User> getFriendsByUser(int userId);
 
-    void addFriend(int userId, int friend_id);
+    void saveFriend(int userId, int friend_id);
 
     void deleteFriend(int user_id, int friendId);
 

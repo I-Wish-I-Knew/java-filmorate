@@ -31,7 +31,7 @@ public class MpaService implements DataService<Mpa> {
     }
 
     private void checkExist(Integer id) {
-        if (!storage.isExists(id)) {
+        if (!storage.containsInStorage(id)) {
             throw new NotFoundException(String.format("Мпа с %d нет в списке", id));
         }
     }

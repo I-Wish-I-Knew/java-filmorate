@@ -21,17 +21,17 @@ public class MpaDbStorage implements DataStorage<Mpa> {
     }
 
     public Mpa get(int id) {
-        sql = "SELECT * FROM MPA WHERE MPA_ID=?";
+        sql = "SELECT mpa_id, mpa_name FROM mpa WHERE mpa_id = ?";
         return jdbcTemplate.queryForObject(sql, new Object[]{id}, new MpaRawMapper());
     }
 
     public List<Mpa> getAll() {
-        sql = "SELECT * FROM MPA";
+        sql = "SELECT mpa_id, mpa_name FROM mpa";
         return jdbcTemplate.query(sql, new MpaRawMapper());
     }
 
-    public boolean isExists(int mpaId) {
-        sql = "SELECT * FROM MPA WHERE MPA_ID=?";
+    public boolean containsInStorage(int mpaId) {
+        sql = "SELECT mpa_id, mpa_name FROM mpa WHERE mpa_id = ?";
         return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{mpaId},
                 ResultSet::next));
     }

@@ -31,17 +31,27 @@ public class UserDbStorageImpl implements UserDbStorage {
 
     @Override
     public User get(int id) {
-        sql = "SELECT * FROM users WHERE user_id = ?";
+        sql = "SELECT user_id, " +
+                "user_name, " +
+                "email, " +
+                "login, " +
+                "birthday " +
+                "FROM users WHERE user_id = ?";
         User user = jdbcTemplate.queryForObject(sql, new Object[]{id}, new UserRowMapper());
-        user.getFriends().addAll(loadUserFriends(id));
+        user.getFriends().addAll(loadFriends(id));
         return user;
     }
 
     @Override
     public List<User> getAll() {
-        sql = "SELECT * FROM users";
+        sql = "SELECT user_id, " +
+                "user_name, " +
+                "email, " +
+                "login, " +
+                "birthday " +
+                "FROM users";
         List<User> users = jdbcTemplate.query(sql, new UserRowMapper());
-        users.forEach(user -> user.getFriends().addAll(loadUserFriends(user.getId())));
+        users.forEach(user -> user.getFriends().addAll(loadFriends(user.getId())));
         return users;
     }
 
@@ -76,21 +86,26 @@ public class UserDbStorageImpl implements UserDbStorage {
     }
 
     @Override
-    public boolean isExists(int userId) {
-        sql = "SELECT * FROM users WHERE user_id = ?";
+    public boolean containsInStorage(int userId) {
+        sql = "SELECT user_id, " +
+                "user_name, " +
+                "email, " +
+                "login, " +
+                "birthday " +
+                "FROM users WHERE user_id = ?";
         return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{userId},
                 ResultSet::next));
     }
 
     @Override
-    public List<User> getFriendsForUser(int userId) {
-        return loadUserFriends(userId).stream()
+    public List<User> getFriendsByUser(int userId) {
+        return loadFriends(userId).stream()
                 .map(this::get)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void addFriend(int userId, int friendId) {
+    public void saveFriend(int userId, int friendId) {
         sql = "INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?)";
         jdbcTemplate.update(sql, userId, friendId);
     }
@@ -112,7 +127,7 @@ public class UserDbStorageImpl implements UserDbStorage {
                 .collect(Collectors.toList());
     }
 
-    private List<Integer> loadUserFriends(int id) {
+    private List<Integer> loadFriends(int id) {
         sql = "SELECT friend_id FROM user_friends WHERE user_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
                 rs.getInt("friend_id"), id);

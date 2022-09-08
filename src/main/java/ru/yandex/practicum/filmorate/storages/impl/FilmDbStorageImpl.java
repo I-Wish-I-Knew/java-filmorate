@@ -139,7 +139,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
-    public boolean isExists(int filmId) {
+    public boolean containsInStorage(int filmId) {
         sql = "SELECT * FROM films WHERE film_id = ?";
         return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{filmId},
                 ResultSet::next));

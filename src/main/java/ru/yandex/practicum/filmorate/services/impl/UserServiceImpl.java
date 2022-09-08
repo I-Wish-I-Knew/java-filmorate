@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getUserFriends(Integer userId) {
         checkExist(userId);
-        List<User> friends = storage.getFriendsForUser(userId);
+        List<User> friends = storage.getFriendsByUser(userId);
         log.debug(String.format("Общее количество друзей у пользователя %d: %d", userId,
                 friends.size()));
         return friends;
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
     public void addFriend(Integer userId, Integer friendId) {
         checkExist(userId);
         checkExist(friendId);
-        storage.addFriend(userId, friendId);
+        storage.saveFriend(userId, friendId);
         log.debug(String.format("Пользователи %d и %d стали друзьями", userId, friendId));
     }
 
@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkExist(Integer id) {
-        if (!storage.isExists(id)) {
+        if (!storage.containsInStorage(id)) {
             throw new NotFoundException(String.format("Пользователя с %d нет в списке", id));
         }
     }
