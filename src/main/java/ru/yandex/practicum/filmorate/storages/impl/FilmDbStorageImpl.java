@@ -145,6 +145,12 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 ResultSet::next));
     }
 
+    @Override
+    public void deleteFilmById(Integer filmId) {
+        String sql = "DELETE FROM films WHERE film_id = ?";
+        jdbcTemplate.update(sql, filmId);
+    }
+
     private List<Integer> loadFilmLikes(Film film) {
         sql = "SELECT user_id FROM film_likes WHERE film_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("user_id"), film.getId());

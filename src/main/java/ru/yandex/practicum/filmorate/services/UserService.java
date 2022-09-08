@@ -13,6 +13,8 @@ public interface UserService {
 
     User get(Integer id);
 
+    void deleteUserById(Integer userId);
+
     void addFriend(Integer userId, Integer friendId);
 
     void deleteFriend(Integer userId, Integer friendId);

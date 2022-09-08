@@ -15,4 +15,6 @@ public interface FilmDbStorage extends DataStorage<Film> {
     void deleteLike(int filmId, int userId);
 
     List<Film> getMostPopular(int count);
+
+    void deleteFilmById(Integer filmId);
 }

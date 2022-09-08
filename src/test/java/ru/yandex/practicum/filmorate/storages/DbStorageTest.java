@@ -166,7 +166,6 @@ public class DbStorageTest {
 
         assertThat(userStorage.getFriendsByUser(user.getId())).contains(friend1, friend2)
                 .hasSize(2);
-
     }
 
     @Test
@@ -260,4 +259,31 @@ public class DbStorageTest {
         assertThat(mpaStorage.getAll()).hasSize(5);
     }
 
+    @Test
+    public void testDeleteFilmById() {
+        Film filmForDelete = new Film(5000, "filmForDelete", "description", LocalDate.parse("1979-04-17",
+                DateTimeFormatter.ISO_DATE), 100, new Mpa(1, "G"), 5);
+
+        filmStorage.save(filmForDelete);
+
+        assertThat(filmStorage.getAll().contains(filmForDelete));
+
+        filmStorage.deleteFilmById(filmForDelete.getId());
+
+        assertThat(filmStorage.getAll()).doesNotContain(filmForDelete);
+    }
+
+    @Test
+    public void testDeleteUserById() {
+        User userForDelete = new User(5000, "userForDelete@mail.com", "login", LocalDate.parse("1979-04-17",
+                DateTimeFormatter.ISO_DATE), "user");
+
+        userStorage.save(userForDelete);
+
+        assertThat(userStorage.getAll().contains(userForDelete));
+
+        userStorage.deleteUserById(userForDelete.getId());
+
+        assertThat(userStorage.getAll()).doesNotContain(userForDelete);
+    }
 }

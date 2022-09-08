@@ -55,4 +55,9 @@ public class FilmController {
                                           Integer count) {
         return service.getMostPopular(count);
     }
+
+    @DeleteMapping("/{filmId}")
+    public void deleteById(@PathVariable Integer filmId) {
+        service.deleteFilmById(filmId);
+    }
 }

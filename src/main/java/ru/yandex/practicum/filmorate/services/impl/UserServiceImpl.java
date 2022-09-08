@@ -48,6 +48,11 @@ public class UserServiceImpl implements UserService {
         return storage.get(id);
     }
 
+    public void deleteUserById(Integer userId) {
+        checkExist(userId);
+        storage.deleteUserById(userId);
+    }
+
     @Override
     public List<User> getUserFriends(Integer userId) {
         checkExist(userId);

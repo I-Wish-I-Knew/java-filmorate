@@ -18,4 +18,6 @@ public interface UserDbStorage extends DataStorage<User> {
 
     List<User> getCommonFriends(int user1Id, int user2Id);
 
+    void deleteUserById(Integer userId);
+
 }

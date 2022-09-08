@@ -86,6 +86,12 @@ public class UserDbStorageImpl implements UserDbStorage {
     }
 
     @Override
+    public void deleteUserById(Integer userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        jdbcTemplate.update(sql, userId);
+    }
+
+    @Override
     public boolean containsInStorage(int userId) {
         sql = "SELECT user_id, " +
                 "user_name, " +

@@ -68,6 +68,11 @@ public class FilmServiceImpl implements FilmService {
         return storage.getMostPopular(count);
     }
 
+    public void deleteFilmById(Integer filmId) {
+        checkExistFilm(filmId);
+        storage.deleteFilmById(filmId);
+    }
+
     private void checkExistFilm(Integer id) {
         if (!storage.containsInStorage(id)) {
             throw new NotFoundException(String.format("Фильма с %d нет в списке", id));

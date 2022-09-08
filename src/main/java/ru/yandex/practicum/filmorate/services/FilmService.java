@@ -17,4 +17,6 @@ public interface FilmService {
     void deleteLike(Integer filmId, Integer userId);
 
     List<Film> getMostPopular(Integer count);
+
+    void deleteFilmById(Integer filmId);
 }
