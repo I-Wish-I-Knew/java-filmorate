@@ -1,23 +1,42 @@
 # java-filmorate
 Template repository for Filmorate project.
 
-Схема базы данных https://github.com/I-Wish-I-Knew/java-filmorate/blob/add_database/databaseFilmorate.png
+# java-explore-with-me
+Template repository for ExploreWithMe project.
 
-Примеры запросов SQL:
+[Repository](https://github.com/I-Wish-I-Knew/java-filmorate)
 
-- для получения списка 10 самых популярных фильмов:
-  SELECT film_id
-  FROM film_likes
-  ORDER BY rate DESC
-  LIMIT 10;
+Filmorate is a social network where people can rate films and get recommendations accordingly their preferences.
 
-- для получения списка друзей пользователя
-  SELECT friend_id
-  FROM user_friends
-  WHERE user_id=(желаемый идентификатор);
+## Features
 
-- для получения списка жанров для фильма
-  SELECT g.genre_name
-  FROM genres AS g
-  INNER JOIN film_genres AS fg ON genres fg.genre_id=g.genre_id
-  WHERE film_id=(желаемый идентификатор);
+- Add, update and delete films
+- Add and delete friends;
+- Add likes to film;
+- Get most popular films;
+- Get sorted films by year and likes;
+
+## Technologies used
+
+- Java 11
+- Spring Boot
+- Lombok
+- Jdbc
+- H2-database
+- Junit, Mockito
+- Maven
+- Postman
+
+## Requirements
+The application can be run locally, the requirements are listed below.
+
+## Local
+- [Java 11 SDK](https://www.oracle.com/de/java/technologies/javase/jdk11-archive-downloads.html)
+- [Maven](https://maven.apache.org/download.cgi)
+
+## Run
+````
+$ mvn spring-boot:run -pl FilmorateApplication
+````
+Filmorate will run by default on port 8080
+````
