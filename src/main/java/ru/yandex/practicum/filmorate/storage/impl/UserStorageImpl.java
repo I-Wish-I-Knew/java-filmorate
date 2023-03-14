@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -20,25 +20,25 @@ import java.util.stream.Collectors;
 
 @Repository
 @Primary
-public class UserDbStorageImpl implements UserDbStorage {
+public class UserStorageImpl implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private String sql;
 
     @Autowired
-    public UserDbStorageImpl(JdbcTemplate jdbcTemplate) {
+    public UserStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public User get(int id) {
+    public User get(Long id) {
         sql = "SELECT user_id, " +
                 "user_name, " +
                 "email, " +
                 "login, " +
                 "birthday " +
                 "FROM users WHERE user_id = ?";
-        User user = jdbcTemplate.queryForObject(sql, new Object[]{id}, new UserRowMapper());
-        user.getFriends().addAll(loadFriends(id));
+        User user = jdbcTemplate.queryForObject(sql, new UserRowMapper(), id);
+        if (user != null) user.getFriends().addAll(loadFriends(id));
         return user;
     }
 
@@ -72,7 +72,7 @@ public class UserDbStorageImpl implements UserDbStorage {
             }
             return stmt;
         }, keyHolder);
-        user.setId(keyHolder.getKey().intValue());
+        user.setId(keyHolder.getKey().longValue());
         return user;
     }
 
@@ -86,57 +86,56 @@ public class UserDbStorageImpl implements UserDbStorage {
     }
 
     @Override
-    public void delete(Integer userId) {
+    public void delete(Long id) {
         String sql = "DELETE FROM users WHERE user_id = ?";
-        jdbcTemplate.update(sql, userId);
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public boolean containsInStorage(int userId) {
+    public boolean containsInStorage(Long userId) {
         sql = "SELECT user_id, " +
                 "user_name, " +
                 "email, " +
                 "login, " +
                 "birthday " +
                 "FROM users WHERE user_id = ?";
-        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{userId},
-                ResultSet::next));
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, ResultSet::next, userId));
     }
 
     @Override
-    public List<User> getFriendsByUser(int userId) {
+    public List<User> getFriendsByUser(Long userId) {
         return loadFriends(userId).stream()
                 .map(this::get)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public void saveFriend(int userId, int friendId) {
+    public void saveFriend(Long userId, Long friendId) {
         sql = "INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?)";
         jdbcTemplate.update(sql, userId, friendId);
     }
 
     @Override
-    public void deleteFriend(int userId, int friendId) {
+    public void deleteFriend(Long userId, Long friendId) {
         sql = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
         jdbcTemplate.update(sql, userId, friendId);
     }
 
     @Override
-    public List<User> getCommonFriends(int user1Id, int user2Id) {
+    public List<User> getCommonFriends(Long user1Id, Long user2Id) {
         sql = "SELECT u1.friend_id FROM user_friends AS u1 " +
                 "INNER JOIN user_friends AS u2 ON u1.friend_id = u2.friend_id " +
                 "WHERE u1.user_id = ? AND u2.user_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
-                        rs.getInt("friend_id"), user1Id, user2Id).stream()
+                        rs.getLong("friend_id"), user1Id, user2Id).stream()
                 .map(this::get)
                 .collect(Collectors.toList());
     }
 
-    private List<Integer> loadFriends(int id) {
+    private List<Long> loadFriends(Long id) {
         sql = "SELECT friend_id FROM user_friends WHERE user_id = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) ->
-                rs.getInt("friend_id"), id);
+                rs.getLong("friend_id"), id);
     }
 }
 

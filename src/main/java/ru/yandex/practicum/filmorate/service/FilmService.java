@@ -5,18 +5,23 @@ import ru.yandex.practicum.filmorate.model.FilmSortBy;
 
 import java.util.List;
 
-public interface FilmService extends DataService<Film> {
+public interface FilmService {
+
+    List<Film> getAll();
+
+    Film get(Long id);
+
     Film add(Film film);
 
     Film update(Film film);
 
-    void delete(Integer id);
+    void delete(Long id);
 
-    void addLike(Integer filmId, Integer userId);
+    void addLike(Long filmId, Long userId);
 
-    void deleteLike(Integer filmId, Integer userId);
+    void deleteLike(Long filmId, Long userId);
 
     List<Film> getMostPopular(Integer count);
 
-    List<Film> getSortedDirectorsFilms(int directorId, FilmSortBy sortBy);
+    List<Film> getSortedDirectorFilms(Long directorId, FilmSortBy sortBy);
 }

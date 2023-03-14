@@ -11,7 +11,7 @@ public class DirectorRowMapper implements RowMapper<Director> {
     public Director mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         return new Director(
-                rs.getInt("director_id"),
+                rs.getLong("director_id"),
                 rs.getString("director_name")
         );
     }

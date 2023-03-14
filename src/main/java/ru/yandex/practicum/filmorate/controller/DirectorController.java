@@ -45,14 +45,14 @@ public class DirectorController {
     }
 
     @GetMapping(value = "/{id}")
-    public Director get(@PathVariable Integer id) {
+    public Director get(@PathVariable Long id) {
         Director director = service.get(id);
         log.info("Get director by id = {}", director.getId());
         return director;
     }
 
     @DeleteMapping(value = "/{id}")
-    public void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Long id) {
         log.info("Delete director id = {}", id);
         service.delete(id);
     }

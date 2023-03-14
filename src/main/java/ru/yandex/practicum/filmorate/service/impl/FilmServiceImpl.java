@@ -9,8 +9,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmSortBy;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -19,12 +19,14 @@ import java.util.List;
 @Slf4j
 @Service
 public class FilmServiceImpl implements FilmService {
-    private final UserDbStorage userStorage;
-    private final FilmDbStorage storage;
+    private final UserStorage userStorage;
+    private final FilmStorage storage;
     private final DirectorStorage directorStorage;
 
     @Autowired
-    public FilmServiceImpl(UserDbStorage userStorage, FilmDbStorage storage, DirectorStorage directorStorage) {
+    public FilmServiceImpl(UserStorage userStorage,
+                           FilmStorage storage,
+                           DirectorStorage directorStorage) {
         this.userStorage = userStorage;
         this.storage = storage;
         this.directorStorage = directorStorage;
@@ -49,20 +51,20 @@ public class FilmServiceImpl implements FilmService {
         return films;
     }
 
-    public Film get(Integer id) {
+    public Film get(Long id) {
         checkExistFilm(id);
         Film film = storage.get(id);
         loadFilmFields(film);
         return film;
     }
 
-    public void addLike(Integer filmId, Integer userId) {
+    public void addLike(Long filmId, Long userId) {
         checkExistUser(userId);
         checkExistFilm(filmId);
         storage.saveLike(filmId, userId);
     }
 
-    public void deleteLike(Integer filmId, Integer userId) {
+    public void deleteLike(Long filmId, Long userId) {
         checkExistUser(userId);
         checkExistFilm(filmId);
         storage.deleteLike(filmId, userId);
@@ -74,13 +76,13 @@ public class FilmServiceImpl implements FilmService {
         return films;
     }
 
-    public void delete(Integer id) {
+    public void delete(Long id) {
         checkExistFilm(id);
         storage.delete(id);
     }
 
     @Override
-    public List<Film> getSortedDirectorsFilms(int directorId, FilmSortBy sortBy) {
+    public List<Film> getSortedDirectorFilms(Long directorId, FilmSortBy sortBy) {
         checkExistDirector(directorId);
         List<Film> films;
         if (sortBy.equals(FilmSortBy.YEAR)) {
@@ -92,27 +94,27 @@ public class FilmServiceImpl implements FilmService {
         return films;
     }
 
-    private void checkExistFilm(Integer id) {
+    private void checkExistFilm(Long id) {
         if (!storage.containsInStorage(id)) {
-            throw new NotFoundException(String.format("Фильма с %d нет в списке", id));
+            throw new NotFoundException(String.format("Film %d was not found", id));
         }
     }
 
-    private void checkExistUser(Integer id) {
+    private void checkExistUser(Long id) {
         if (!userStorage.containsInStorage(id)) {
-            throw new NotFoundException(String.format("Пользователя с %d нет в списке", id));
+            throw new NotFoundException(String.format("User %d was not found", id));
         }
     }
 
-    private void checkExistDirector(Integer id) {
+    private void checkExistDirector(Long id) {
         if (!directorStorage.containsInStorage(id)) {
-            throw new NotFoundException(String.format("Директора с %d нет в списке", id));
+            throw new NotFoundException(String.format("Director %d was not found", id));
         }
     }
 
     private void validateDate(LocalDate releaseDate) {
         if (releaseDate.isBefore(LocalDate.parse("1895-12-28", DateTimeFormatter.ISO_DATE))) {
-            RuntimeException e = new WrongDateException("Дата выпуска не может быть ранее 28 декабря 1895");
+            RuntimeException e = new WrongDateException("Release date must be after 28.12.1895");
             log.error(e.getMessage());
             throw e;
         }

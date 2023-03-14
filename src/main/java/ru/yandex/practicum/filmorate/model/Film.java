@@ -5,6 +5,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -12,9 +13,14 @@ import java.util.Set;
 
 @Setter
 @Getter
+@Builder
 @ToString
 @NoArgsConstructor
-public class Film extends AppData {
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
+public class Film {
+    @NotNull(groups = {Update.class})
+    private Long id;
     @NotBlank
     private String name;
     @Size(max = 200)
@@ -23,21 +29,11 @@ public class Film extends AppData {
     private LocalDate releaseDate;
     @DecimalMin(value = "0")
     private Integer duration;
-    private final Set<Integer> likes = new HashSet<>();
+    private final Set<Long> likes = new HashSet<>();
     private final Set<Genre> genres = new HashSet<>();
     private final Set<Director> directors = new HashSet<>();
     @NonNull
     private Mpa mpa;
     private Integer rate = 0;
 
-    public Film(Integer id, String name, String description, LocalDate releaseDate,
-                Integer duration, Mpa mpa, Integer rate) {
-        super(id);
-        this.name = name;
-        this.description = description;
-        this.releaseDate = releaseDate;
-        this.duration = duration;
-        this.mpa = mpa;
-        this.rate = rate;
-    }
 }

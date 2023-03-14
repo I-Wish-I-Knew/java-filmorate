@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -24,18 +24,18 @@ import java.util.Objects;
 
 @Repository
 @Primary
-public class FilmDbStorageImpl implements FilmDbStorage {
+public class FilmStorageImpl implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private String sql;
 
     @Autowired
-    public FilmDbStorageImpl(JdbcTemplate jdbcTemplate) {
+    public FilmStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Film get(int id) {
+    public Film get(Long id) {
         sql = "SELECT film_id, " +
                 "film_name, " +
                 "description, " +
@@ -47,7 +47,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS mpa ON f.mpa_id = mpa.mpa_id " +
                 "WHERE film_id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new FilmRowMapper());
+        return jdbcTemplate.queryForObject(sql, new FilmRowMapper(), id);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
             stmt.setInt(6, film.getMpa().getId());
             return stmt;
         }, keyHolder);
-        film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        film.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         saveGenres(film);
         saveFilmDirectors(film);
         updateRate(film.getId());
@@ -107,13 +107,13 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
-    public void delete(Integer filmId) {
+    public void delete(Long id) {
         String sql = "DELETE FROM films WHERE film_id = ?";
-        jdbcTemplate.update(sql, filmId);
+        jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public List<Film> getSortedDirectorsFilmsByLikes(int directorId) {
+    public List<Film> getSortedDirectorsFilmsByLikes(Long directorId) {
         String sql = "SELECT f.*, m.mpa_name FROM films f " +
                 "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
                 "LEFT JOIN film_likes fl ON f.film_id = fl.film_id " +
@@ -124,7 +124,7 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
-    public List<Film> getSortedDirectorsFilmsByYear(int directorId) {
+    public List<Film> getSortedDirectorsFilmsByYear(Long directorId) {
         String sql = "SELECT f.*, m.mpa_name FROM films f " +
                 "LEFT JOIN mpa m ON f.mpa_id = m.mpa_id " +
                 "LEFT JOIN film_directors fd ON f.film_id = fd.film_id " +
@@ -134,14 +134,14 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
-    public void saveLike(int filmId, int userId) {
+    public void saveLike(Long filmId, Long userId) {
         sql = "INSERT INTO film_likes (film_id, user_id) VALUES (?,?)";
         jdbcTemplate.update(sql, filmId, userId);
         updateRate(filmId);
     }
 
     @Override
-    public void deleteLike(int filmId, int userId) {
+    public void deleteLike(Long filmId, Long userId) {
         sql = "DELETE FROM film_likes " +
                 "WHERE film_id = ? AND user_id = ?";
         jdbcTemplate.update(sql, filmId, userId);
@@ -166,15 +166,14 @@ public class FilmDbStorageImpl implements FilmDbStorage {
     }
 
     @Override
-    public boolean containsInStorage(int filmId) {
+    public boolean containsInStorage(Long filmId) {
         sql = "SELECT * FROM films WHERE film_id = ?";
-        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{filmId},
-                ResultSet::next));
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, ResultSet::next, filmId));
     }
 
-    public List<Integer> loadFilmLikes(Film film) {
+    public List<Long> loadFilmLikes(Film film) {
         sql = "SELECT user_id FROM film_likes WHERE film_id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getInt("user_id"),
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("user_id"),
                 film.getId());
     }
 
@@ -213,12 +212,12 @@ public class FilmDbStorageImpl implements FilmDbStorage {
         jdbcTemplate.update(sql, film.getId());
     }
 
-    private void updateRate(int filmId) {
+    private void updateRate(Long id) {
         sql = "UPDATE films f " +
                 "SET f.rate = COALESCE(SELECT COUNT(user_id) " +
                 "FROM film_likes " +
                 "WHERE film_id = ?, 0) " +
                 "WHERE f.film_id = ?";
-        jdbcTemplate.update(sql, filmId, filmId);
+        jdbcTemplate.update(sql, id, id);
     }
 }
