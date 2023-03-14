@@ -5,25 +5,25 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.DataStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
-public class GenreDbStorage implements DataStorage<Genre> {
+public class GenreStorageImpl implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private String sql;
 
     @Autowired
-    public GenreDbStorage(JdbcTemplate jdbcTemplate) {
+    public GenreStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Genre get(int id) {
+    public Genre get(Integer id) {
         sql = "SELECT genre_id, genre_name FROM genres WHERE genre_id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new GenreRowMapper());
+        return jdbcTemplate.queryForObject(sql, new GenreRowMapper(), id);
     }
 
     public List<Genre> getAll() {
@@ -31,9 +31,8 @@ public class GenreDbStorage implements DataStorage<Genre> {
         return jdbcTemplate.query(sql, new GenreRowMapper());
     }
 
-    public boolean containsInStorage(int genreId) {
+    public boolean containsInStorage(Integer id) {
         sql = "SELECT genre_id, genre_name FROM genres WHERE genre_id = ?";
-        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{genreId},
-                ResultSet::next));
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, ResultSet::next, id));
     }
 }

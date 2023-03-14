@@ -6,17 +6,17 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
 
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    private final UserDbStorage storage;
+    private final UserStorage storage;
 
     @Autowired
-    public UserServiceImpl(UserDbStorage storage) {
+    public UserServiceImpl(UserStorage storage) {
         this.storage = storage;
     }
 
@@ -37,55 +37,45 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAll() {
-        List<User> allUsers = storage.getAll();
-        log.debug(String.format("Общее количество пользователей в хранилище: %d", allUsers.size()));
-        return allUsers;
+        return storage.getAll();
     }
 
     @Override
-    public User get(Integer id) {
+    public User get(Long id) {
         checkExist(id);
         return storage.get(id);
     }
 
-    public void delete(Integer id) {
+    public void delete(Long id) {
         checkExist(id);
         storage.delete(id);
     }
 
     @Override
-    public List<User> getUserFriends(Integer id) {
+    public List<User> getUserFriends(Long id) {
         checkExist(id);
-        List<User> friends = storage.getFriendsByUser(id);
-        log.debug(String.format("Общее количество друзей у пользователя %d: %d", id,
-                friends.size()));
-        return friends;
+        return storage.getFriendsByUser(id);
     }
 
     @Override
-    public void addFriend(Integer userId, Integer friendId) {
+    public void addFriend(Long userId, Long friendId) {
         checkExist(userId);
         checkExist(friendId);
         storage.saveFriend(userId, friendId);
-        log.debug(String.format("Пользователи %d и %d стали друзьями", userId, friendId));
     }
 
     @Override
-    public void deleteFriend(Integer userId, Integer friendId) {
+    public void deleteFriend(Long userId, Long friendId) {
         checkExist(userId);
         checkExist(friendId);
         storage.deleteFriend(userId, friendId);
-        log.debug(String.format("Пользователи %d и %d больше не друзья", userId, friendId));
     }
 
     @Override
-    public List<User> getCommonFriends(Integer userId, Integer anotherUserId) {
+    public List<User> getCommonFriends(Long userId, Long anotherUserId) {
         checkExist(userId);
         checkExist(anotherUserId);
-        List<User> commonFriends = storage.getCommonFriends(userId, anotherUserId);
-        log.debug(String.format("Общее количество общих друзей у пользователя %d и пользователя %d: %d", userId, anotherUserId,
-                commonFriends.size()));
-        return commonFriends;
+        return storage.getCommonFriends(userId, anotherUserId);
     }
 
     private void setName(User user) {
@@ -94,9 +84,9 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void checkExist(Integer id) {
+    private void checkExist(Long id) {
         if (!storage.containsInStorage(id)) {
-            throw new NotFoundException(String.format("Пользователя с %d нет в списке", id));
+            throw new NotFoundException(String.format("User %d was not found", id));
         }
     }
 }

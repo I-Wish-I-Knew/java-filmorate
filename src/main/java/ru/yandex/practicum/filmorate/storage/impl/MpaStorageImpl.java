@@ -5,24 +5,24 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.mapper.MpaRawMapper;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.DataStorage;
+import ru.yandex.practicum.filmorate.storage.MpaStorage;
 
 import java.sql.ResultSet;
 import java.util.List;
 
 @Repository
-public class MpaDbStorage implements DataStorage<Mpa> {
+public class MpaStorageImpl implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
     private String sql;
 
     @Autowired
-    public MpaDbStorage(JdbcTemplate jdbcTemplate) {
+    public MpaStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Mpa get(int id) {
+    public Mpa get(Integer id) {
         sql = "SELECT mpa_id, mpa_name FROM mpa WHERE mpa_id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new MpaRawMapper());
+        return jdbcTemplate.queryForObject(sql, new MpaRawMapper(), id);
     }
 
     public List<Mpa> getAll() {
@@ -30,9 +30,8 @@ public class MpaDbStorage implements DataStorage<Mpa> {
         return jdbcTemplate.query(sql, new MpaRawMapper());
     }
 
-    public boolean containsInStorage(int mpaId) {
+    public boolean containsInStorage(Integer id) {
         sql = "SELECT mpa_id, mpa_name FROM mpa WHERE mpa_id = ?";
-        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{mpaId},
-                ResultSet::next));
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, ResultSet::next, id));
     }
 }

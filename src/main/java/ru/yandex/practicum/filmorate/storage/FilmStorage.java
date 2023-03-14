@@ -6,25 +6,31 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
 
-public interface FilmDbStorage extends DataStorage<Film> {
+public interface FilmStorage {
+
+    Film get(Long id);
+
+    List<Film> getAll();
+
+    boolean containsInStorage(Long id);
 
     Film save(Film film);
 
     Film update(Film film);
 
-    void delete(Integer filmId);
+    void delete(Long id);
 
-    void saveLike(int filmId, int userId);
+    void saveLike(Long filmId, Long userId);
 
-    void deleteLike(int filmId, int userId);
+    void deleteLike(Long filmId, Long userId);
 
     List<Film> getMostPopular(int count);
 
-    List<Film> getSortedDirectorsFilmsByLikes(int directorId);
+    List<Film> getSortedDirectorsFilmsByLikes(Long directorId);
 
-    List<Film> getSortedDirectorsFilmsByYear(int directorId);
+    List<Film> getSortedDirectorsFilmsByYear(Long directorId);
 
-    List<Integer> loadFilmLikes(Film film);
+    List<Long> loadFilmLikes(Film film);
 
     List<Genre> loadFilmGenre(Film film);
 
