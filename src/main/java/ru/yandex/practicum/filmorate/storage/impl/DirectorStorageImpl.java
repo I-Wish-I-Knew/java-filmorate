@@ -15,19 +15,19 @@ import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class DirectorDbStorageImpl implements DirectorStorage {
+public class DirectorStorageImpl implements DirectorStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public DirectorDbStorageImpl(JdbcTemplate jdbcTemplate) {
+    public DirectorStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Director get(int id) {
+    public Director get(Long id) {
         String sql = "SELECT * FROM directors WHERE director_id = ?;";
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new DirectorRowMapper());
+        return jdbcTemplate.queryForObject(sql, new DirectorRowMapper(), id);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class DirectorDbStorageImpl implements DirectorStorage {
             stmt.setString(1, director.getName());
             return stmt;
         }, keyHolder);
-        director.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+        director.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
         return director;
     }
 
@@ -59,15 +59,14 @@ public class DirectorDbStorageImpl implements DirectorStorage {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(Long id) {
         String sql = "DELETE FROM directors where director_id = ?;";
         jdbcTemplate.update(sql, id);
     }
 
     @Override
-    public boolean containsInStorage(int id) {
+    public boolean containsInStorage(Long id) {
         String sql = "SELECT * FROM directors WHERE director_id = ?";
-        return Boolean.TRUE.equals(jdbcTemplate.query(sql, new Object[]{id},
-                ResultSet::next));
+        return Boolean.TRUE.equals(jdbcTemplate.query(sql, ResultSet::next, id));
     }
 }

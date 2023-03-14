@@ -4,18 +4,23 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
-public interface UserService extends DataService<User> {
+public interface UserService {
+
+    List<User> getAll();
+
+    User get(Long id);
+
     User add(User user);
 
     User update(User user);
 
-    void delete(Integer id);
+    void delete(Long id);
 
-    void addFriend(Integer userId, Integer friendId);
+    void addFriend(Long userId, Long friendId);
 
-    void deleteFriend(Integer userId, Integer friendId);
+    void deleteFriend(Long userId, Long friendId);
 
-    List<User> getCommonFriends(Integer userId, Integer anotherUserId);
+    List<User> getCommonFriends(Long userId, Long anotherUserId);
 
-    List<User> getUserFriends(Integer id);
+    List<User> getUserFriends(Long id);
 }

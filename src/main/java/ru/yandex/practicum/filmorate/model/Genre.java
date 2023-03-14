@@ -1,17 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class Genre extends AppData {
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
+public class Genre {
+    private Integer id;
     private String name;
 
-    public Genre(Integer id, String name) {
-        super(id);
-        this.name = name;
-    }
 }
